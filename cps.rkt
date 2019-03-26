@@ -120,7 +120,15 @@
             (define t (gensym 't))	  
             `(let ([,t (,op ,@(map T-ae aes))]) (,cae 0 ,t))]
            ; TODO: missing forms    
-           ))	  
+           [`(let ([,x ,RHS]) ,BODY)
+            (T-e RHS `(lambda (_ ,x) ,(T-e BODY cae)))]
+
+           [`(call/cc ,aef)
+            `(,(T-ae aef) ,cae ,cae)]
+      ;Have to handle if and T-ae
+           ;untagged aplication needs to come last
+           [`(,aef ,aes ..)
+             `(,(T-ae aef) ,cae ,@(map T-ae aes))]))	  
   ; We transform the program e, using an initial continuation that calls halt	  
   ; Here we assume the first parameter to functions is the current continuation.    
   ; If it's the last, then use (x _) as the parameter list. We use a _ because 
